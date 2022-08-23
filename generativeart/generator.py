@@ -6,6 +6,7 @@ Owner: Chahak Mehta (chahakmehta013 [at] gmail [dot] com)
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import ArtistAnimation
 
 
 class Generator:
@@ -82,24 +83,78 @@ class Generator:
         Returns:
         np.array: Changed Y values
         """
-        X, Y = mesh
-        return Y + np.sin(Y)**2
+        return Y + np.sin(Y) ** 2
 
-    def generate(self, filepath=""):
+    def generate_image(self, filepath="", **kwargs):
         """Generate the image and save it."""
         fig, ax = self._create_fig(subplot_kw={"projection": self.projection})
-        mesh = self._create_mesh()
+        X, Y = self._create_mesh()
         if not self.xfunc:
-            X = self._x_function(mesh)
+            x_res = self._x_function(X, Y)
         else:
-            X = self.xfunc(mesh)
+            x_res = self.xfunc(X, Y)
 
         if not self.yfunc:
-            Y = self._y_function(mesh)
+            y_res = self._y_function(X, Y)
         else:
-            Y = self.yfunc(mesh)
+            y_res = self.yfunc(X, Y)
 
-        ax.scatter(X, Y, c='k', s=0.3)
+        ax.scatter(x_res, y_res, c=self.pointcolor, s=0.2, alpha=0.05)
         if filepath:
             fig.savefig(filepath)
         return fig, ax
+
+    def generate_animation(self, filepath="./examples/temp.mp4", **kwargs):
+        """Generate animation for the given formulae."""
+        initial_points = np.linspace(0, np.max(self.yrange), len(self.yrange))
+
+        X, Y = self._create_mesh()
+        if not self.xfunc:
+            x_res = self._x_function(X, Y)
+        else:
+            x_res = self.xfunc(X, Y)
+
+        if not self.yfunc:
+            y_res = self._y_function(X, Y)
+        else:
+            y_res = self.yfunc(X, Y)
+
+        x_points = x_res.reshape(-1, 1)
+        y_points = y_res.reshape(-1, 1)
+        initial_points = np.stack(
+            [np.zeros(x_points.shape), np.zeros(y_points.shape)]
+        )
+        final_points = np.stack([x_points, y_points])
+
+        slopes = (final_points[1, :] - initial_points[1, :]) / (
+            final_points[0, :] - initial_points[0, :]
+        )
+        intercepts = initial_points[1, :] - slopes * initial_points[0, :]
+
+        points = np.stack(
+            [
+                np.linspace(
+                    initial_points[0, i], final_points[0, i], len(self.yrange)
+                )
+                for i in range(y_points.shape[0])
+            ]
+        ).squeeze()
+        lines = slopes * points + intercepts
+
+        fig, ax = self._create_fig(subplot_kw={"projection": self.projection})
+        ax.set_axis_off()
+        ax.set_facecolor(self.background)
+        fig.set_facecolor(self.background)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ims = [
+            [
+                ax.scatter(
+                    points[:, frame], lines[:, frame], c="k", s=0.2, alpha=0.05
+                )
+            ]
+            for frame in range(len(self.yrange))
+        ]
+        ani = ArtistAnimation(fig, ims, interval=15)
+        print("Saving animation")
+        ani.save(filepath, writer="ffmpeg")
