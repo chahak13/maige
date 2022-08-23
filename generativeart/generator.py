@@ -16,29 +16,51 @@ class Generator:
     images.
     """
 
-    def __init__(self, facecolor="#ffffff", xfunc=None, yfunc=None, projection="polar"):
+    def __init__(
+        self,
+        pointcolor="#000000",
+        background="#ffffff",
+        xfunc=None,
+        yfunc=None,
+        projection="polar",
+        xrange=None,
+        yrange=None,
+        fig=None,
+        ax=None,
+    ):
         """Set variables for the base class Generator."""
-        self.facecolor = facecolor
+        self.pointcolor = pointcolor
+        self.background = background
         self.xfunc = xfunc
         self.yfunc = yfunc
         self.projection = projection
+        self.xrange = (
+            np.arange(-np.pi, np.pi, 0.01) if xrange is None else xrange
+        )
+        self.yrange = (
+            np.arange(-np.pi, np.pi, 0.01) if yrange is None else yrange
+        )
+        self.fig = fig
+        self.ax = ax
 
     def _create_fig(self, **kwargs):
-        fig, ax = plt.subplots(figsize=(7, 7), **kwargs)
+        fig, ax = (
+            plt.subplots(figsize=(7, 7), **kwargs)
+            if self.fig is None or self.ax is None
+            else (self.fig, self.ax)
+        )
         ax.set_axis_off()
-        ax.set_facecolor(self.facecolor)
-        fig.set_facecolor(self.facecolor)
+        ax.set_facecolor(self.background)
+        fig.set_facecolor(self.background)
         ax.set_xticks([])
         ax.set_yticks([])
         return fig, ax
 
     def _create_mesh(self, **kwargs):
-        x = np.arange(-np.pi, np.pi, 0.1)
-        y = np.arange(-np.pi, np.pi, 0.1)
-        X, Y = np.meshgrid(x, y)
+        X, Y = np.meshgrid(self.xrange, self.yrange)
         return X, Y
 
-    def _x_function(self, mesh):
+    def _x_function(self, X, Y):
         """
         Return changed for x values of points based on the function.
 
@@ -48,10 +70,9 @@ class Generator:
         Returns:
         np.array: Changed X values
         """
-        X, Y = mesh
         return X + np.cos(Y)
 
-    def _y_function(self, mesh):
+    def _y_function(self, X, Y):
         """
         Return changed for y values of points based on the function.
 
