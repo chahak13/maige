@@ -104,10 +104,10 @@ class Generator:
             fig.savefig(filepath)
         return fig, ax
 
-    def generate_animation(self, filepath="./examples/temp.mp4", **kwargs):
+    def generate_animation(
+        self, filepath="./examples/temp.mp4", init_cond="linear", **kwargs
+    ):
         """Generate animation for the given formulae."""
-        initial_points = np.linspace(0, np.max(self.yrange), len(self.yrange))
-
         X, Y = self._create_mesh()
         if not self.xfunc:
             x_res = self._x_function(X, Y)
@@ -121,9 +121,24 @@ class Generator:
 
         x_points = x_res.reshape(-1, 1)
         y_points = y_res.reshape(-1, 1)
-        initial_points = np.stack(
-            [np.zeros(x_points.shape), np.zeros(y_points.shape)]
-        )
+        if init_cond == "linear":
+            initial_points = np.stack(
+                [np.zeros(x_points.shape), np.zeros(y_points.shape)]
+            )
+        elif init_cond == "uniform":
+            rng = np.random.default_rng()
+            low = np.min(self.xrange)
+            high = np.max(self.xrange)
+            initial_points = np.stack(
+                [
+                    rng.uniform(low, high, x_points.shape),
+                    rng.uniform(low, high, y_points.shape),
+                ]
+            )
+        else:
+            raise ValueError(
+                "Invalid value of init_cond for points. Use value from {linear, uniform}"
+            )
         final_points = np.stack([x_points, y_points])
 
         slopes = (final_points[1, :] - initial_points[1, :]) / (
@@ -154,6 +169,11 @@ class Generator:
                 )
             ]
             for frame in range(len(self.yrange))
+        ]
+        # Add a few more frames for the final design
+        ims += [
+            [ax.scatter(points[:, -1], lines[:, -1], c="k", s=0.2, alpha=0.05)]
+            for _ in range(50)
         ]
         ani = ArtistAnimation(fig, ims, interval=15)
         print("Saving animation")
