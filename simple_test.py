@@ -1,14 +1,29 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from generativeart.generator import Generator
 
-xfunc = lambda X, Y: X + Y * np.sin(X**2)
-yfunc = lambda X, Y: Y + X * np.cos(Y**2)
+# xfunc = lambda X, Y: X + np.arctan(Y) + np.log(np.abs(Y))
+# yfunc = lambda X, Y: Y + np.sin(X) + np.log((X + Y) ** 2)
+# xfunc = lambda X, Y: X + np.sin(X**2)
+# yfunc = lambda X, Y: Y + np.sin(Y**2)
+xfunc = lambda X, Y: X - Y - 1 * 0
+yfunc = lambda X, Y: np.sinc(X) - 6
+xrange = np.arange(-np.pi, np.pi, 0.01)
+yrange = np.arange(-np.pi, np.pi, 0.01)
+# yrange = np.linspace(np.pi, np.pi / 2, 2)
 # g = Generator(pointcolor="#FF1818", xfunc=xfunc, yfunc=yfunc)
-g = Generator(pointcolor="#000000", projection="rectilinear")
-# fig, ax = g.generate_image()
-g.generate_animation(filepath="./examples/t.mp4")
+g = Generator(
+    pointcolor="#000000",
+    projection="polar",
+    # xfunc=xfunc,
+    # yfunc=yfunc,
+    xrange=xrange,
+    yrange=yrange,
+    seed=2,
+)
+fig, ax = g.generate_image()
+# g.generate_animation(filepath="./examples/generator_long.mp4", init_cond="uniform")
 # del g
 # xrange = np.arange(-np.pi + 1, np.pi + 1, 0.01)
 # yrange = np.arange(-np.pi + 1, np.pi + 1, 0.01)
