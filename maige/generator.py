@@ -29,7 +29,7 @@ class Generator:
         background="#ffffff",
         xfunc=None,
         yfunc=None,
-        projection="polar",
+        projection="rectilinear",
         xrange=None,
         yrange=None,
         fig=None,
