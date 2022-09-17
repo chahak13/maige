@@ -7,9 +7,11 @@ name = "pypi"
 numpy = "*"
 matplotlib = "*"
 python-lsp-server = {extras = ["all"], version = "*"}
+tqdm = "*"
 
 [dev-packages]
 black = "*"
+isort = "*"
 
 [requires]
 python_version = "3.10"
