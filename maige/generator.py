@@ -12,7 +12,7 @@ import numpy as np
 import tqdm
 from matplotlib.animation import FuncAnimation
 
-from generativeart.functions import ExpressionTree
+from maige.functions import ExpressionTree
 
 
 class Generator:

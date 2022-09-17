@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maige"
+description = "Generate beautiful images and animations using mathematical formulae."
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["art", "math", "animation", "generativeart"]
+version = "0.0.1"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "tqdm",
+]
+
+[tool.black]
+line-length = 80
