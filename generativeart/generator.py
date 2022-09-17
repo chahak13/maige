@@ -115,12 +115,16 @@ class Generator:
             "random_state": self.random_state,
             "filetype": filetype,
             "filepath": filepath,
-            "x_function": self.xfunc.get_expr_string(),
-            "y_function": self.yfunc.get_expr_string(),
+            "x_function": self.xfunc.get_expr_string()
+            if isinstance(self.xfunc, ExpressionTree)
+            else None,
+            "y_function": self.yfunc.get_expr_string()
+            if isinstance(self.yfunc, ExpressionTree)
+            else None,
         }
         basename, filename = os.path.split(os.path.abspath(filepath))
         filename, extension = filename.rsplit(".")
-        json_filepath = os.path.join(basename, "examples", filename + ".json")
+        json_filepath = os.path.join(basename, filename + ".json")
         json.dump(info, open(json_filepath, "w"), indent=4)
         print(f"Stored run info at {json_filepath}")
 
