@@ -10,7 +10,7 @@ g = Generator()
 g.generate_image()
 ```
 
-[](./examples/ghost.png)
+![](./examples/ghost.png)
 ### Projection
 
 ``` python
@@ -19,7 +19,7 @@ g = Generator(projection="rectilinear")
 g.generate_image()
 ```
 
-[](./examples/rectilinear.png)
+![](./examples/rectilinear.png)
 ### Custom Function
 
 ``` python
@@ -33,7 +33,7 @@ g = Generator(
 )
 fig, ax = g.generate_image("./examples/custom_func.png")
 ```
-[](./examples/custom_func.png)
+![](./examples/custom_func.png)
 ### Custom Range
 
 ``` python
@@ -51,7 +51,7 @@ g = Generator(
 fig, ax = g.generate_image("./examples/custom_range.png")
 ```
 
-[](./examples/custom_range.png)
+![](./examples/custom_range.png)
 ### Color
 
 ``` python
@@ -62,5 +62,5 @@ g = Generator(
 )
 fig, ax = g.generate_image("./examples/custom_color.png")
 ```
-
+![](./examples/custom_color.png)
 ### Reproducibility
