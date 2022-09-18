@@ -63,4 +63,23 @@ g = Generator(
 fig, ax = g.generate_image("./examples/custom_color.png")
 ```
 ![](./examples/custom_color.png)
+
+### Animation
+
+``` python
+xfunc = lambda X, Y: X**2 * np.sin(Y**2)
+yfunc = lambda X, Y: Y**3 - np.cos(X**2)
+xrange = np.arange(0, np.pi, 0.01)
+yrange = np.arange(0, np.pi, 0.01)
+g = Generator(
+    pointcolor="#ffffff",
+    background="#000000",
+    projection="polar",
+    xfunc=xfunc,
+    yfunc=yfunc,
+)
+g.generate_animation("./examples/anim_example.gif", init_cond="uniform")
+```
+
+![](./examples/anim_example_compressed.gif)
 ### Reproducibility
