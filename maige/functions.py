@@ -83,7 +83,6 @@ class ExpressionTree:
         self.variables = variables
         self.method = None
         self.children = []
-        # self.weight
 
     def generate_function(
         self,
@@ -95,7 +94,13 @@ class ExpressionTree:
         value,
     ):
         """Generate function."""
-        self.node_type = node_type if node_type else self.rng.integers(0, 4)
+        self.node_type = (
+            node_type
+            if node_type
+            else self.rng.choice(
+                np.arange(0, 4), 1, p=[0.001, 0.333, 0.333, 0.333]
+            )
+        )
         self.weight = weight if weight else _constants(self.rng)
         self.children = []
 
@@ -181,9 +186,9 @@ class ExpressionTree:
         if self.node_type == 0 or self.node_type == 1:
             return self.expr * self.weight
         elif self.node_type == 2:
-            return self.method(inputs[0], inputs[1])
+            return self.method(inputs[0], inputs[1]).real
         elif self.node_type == 3:
-            return self.method(inputs[0])
+            return self.method(inputs[0]).real
 
     def get_expr_string(self):
         """Get expression in string form."""
