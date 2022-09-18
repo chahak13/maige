@@ -91,7 +91,7 @@ class Generator:
         Returns:
         np.array: Changed X values
         """
-        tree = ExpressionTree(self.rng, depth=0, max_depth=2, variables=[X, Y])
+        tree = ExpressionTree(self.rng, depth=0, max_depth=5, variables=[X, Y])
         tree.generate_function(None, 2, 1, None, None, None)
         return tree
 
@@ -105,7 +105,7 @@ class Generator:
         Returns:
         np.array: Changed Y values
         """
-        tree = ExpressionTree(self.rng, depth=0, max_depth=2, variables=[X, Y])
+        tree = ExpressionTree(self.rng, depth=0, max_depth=5, variables=[X, Y])
         tree.generate_function(None, 2, 1, None, None, None)
         return tree
 
@@ -136,13 +136,13 @@ class Generator:
             self.xfunc = self._x_function(X, Y)
             x_res = self.xfunc.execute()
         else:
-            x_res = self.xfunc(X, Y)
+            x_res = self.xfunc(X, Y).real
 
         if not self.yfunc:
             self.yfunc = self._y_function(X, Y)
             y_res = self.yfunc.execute()
         else:
-            y_res = self.yfunc(X, Y)
+            y_res = self.yfunc(X, Y).real
 
         ax.scatter(x_res, y_res, c=self.pointcolor, s=0.2, alpha=0.05)
         if not filepath:
