@@ -25,7 +25,7 @@ def _arccos(x):
 
 def _log(x):
     if np.any(x < 0):
-        x = np.abs(x)
+        x = np.abs(x) + 1e-6
     return np.log(x)
 
 
