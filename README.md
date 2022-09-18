@@ -56,8 +56,8 @@ fig, ax = g.generate_image("./examples/custom_range.png")
 
 ``` python
 g = Generator(
-    pointcolor="#ffffff",
-    background="#000000",
+    pointcolor="#000000",
+    background="#FA7070",
     projection="polar",
 )
 fig, ax = g.generate_image("./examples/custom_color.png")
