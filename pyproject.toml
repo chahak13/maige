@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "maige"
 description = "Generate beautiful images and animations using mathematical formulae."
+authors = [
+        { name="Chahak Mehta", email="chahakmehta013@gmail.com" }
+]
 readme = "README.md"
 requires-python = ">=3.7"
 keywords = ["art", "math", "animation", "generativeart"]
@@ -14,6 +17,15 @@ dependencies = [
     "matplotlib",
     "tqdm",
 ]
+classifiers = [
+            "Programming Language :: Python :: 3",
+            "License :: OSI Approved :: MIT License",
+            "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/chahak13/maige"
+"Bug Tracker" = "https://github.com/chahak13/maige/issues"
 
 [tool.black]
 line-length = 80
