@@ -11,7 +11,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.7"
 keywords = ["art", "math", "animation", "generativeart"]
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
     "numpy",
     "matplotlib",
