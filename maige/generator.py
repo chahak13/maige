@@ -52,7 +52,7 @@ class Generator:
         self.ax = ax
         self.seed = seed
         if isinstance(self.seed, str):
-            self.random_state = json.load(self.seed)["random_state"]
+            self.random_state = json.load(open(self.seed, "r"))["random_state"]
             self.rng = np.random.default_rng()
             self.rng.__setstate__(self.random_state)
         elif isinstance(self.seed, int) or self.seed is None:
@@ -152,7 +152,7 @@ class Generator:
             )
 
         self._save_info("image", filepath)
-        fig.savefig(filepath)
+        fig.savefig(filepath, dpi=350)
         return fig, ax
 
     def generate_animation(
