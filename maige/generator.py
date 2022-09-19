@@ -45,31 +45,81 @@ class Generator:
 
     This class defines various methods that are used in generating the
     images.
+
+    Usage example:
+
+    >>> from maige.generator import Generator
+    >>> g = Generator()
+    >>> g.generate_image("/path/to/store/image.png")
     """
 
     def __init__(
         self,
-        pointcolor="#000000",
-        background="#ffffff",
-        xfunc=None,
-        yfunc=None,
-        projection="rectilinear",
-        xrange=None,
-        yrange=None,
+        pointcolor: str = "#000000",
+        background: str = "#ffffff",
+        xfunc: Callable = None,
+        yfunc: Callable = None,
+        projection: str = "rectilinear",
+        xrange: np.ndarray = None,
+        yrange: np.ndarray = None,
         fig=None,
         ax=None,
-        seed=None,
+        seed: Union[int, str] = None,
     ):
-        """Set variables for the base class Generator."""
-        self.pointcolor = pointcolor
-        self.background = background
-        self.xfunc = xfunc
-        self.yfunc = yfunc
-        self.projection = projection
-        self.xrange = (
+        """Create the base class to initialize the image generator.
+
+        Args:
+            pointcolor: str
+                Hex string used as color for the points in the figure.
+
+            background: str
+                Hex string used to set the color for the background of
+                the figure.
+
+            xfunc: Callable
+                Function used to transform the x-coordinates. This is an
+                optional argument. If not provided, a random function is
+                generated using an Expression Tree.
+
+            yfunc: Callable
+                Function to transform the y-coordinates. This is an optional
+                argument like xfunc and a random function is generated if
+                one is not provided.
+
+            projection: str
+                A string to determine the projection used for the figure.
+                It accepts any string accepted by matplotlib.pyplot.figure's
+                `projection` argument.
+
+            xrange: np.ndarray
+                A numpy array of x-coordinates to calculate xfunc on.
+
+            yrange: np.ndarray
+                A numpy array of y-coordinates to calculate yfunc on.
+
+            fig: matplotlib.figure.Figure
+                Matplolib figure to use for plotting. __Optional__
+
+            ax: matplotlib.axes.Axes
+                Matplotlib axes to use for plotting. __Optional__
+
+            seed: int or str
+                Random seed to determine state for the numpy random generator.
+                If `int`, the integer is passed directly as seed to
+                `numpy.random.default_rng`. If `str`, it expects a path to
+                a json file that has a key called 'random_state' that can be
+                used by the `numpy.random.Generator.__setstate__` to set the
+                random state.
+        """
+        self._pointcolor = pointcolor
+        self._background = background
+        self._xfunc = xfunc
+        self._yfunc = yfunc
+        self._projection = projection
+        self._xrange = (
             np.arange(-np.pi, np.pi, 0.01) if xrange is None else xrange
         )
-        self.yrange = (
+        self._yrange = (
             np.arange(-np.pi, np.pi, 0.01) if yrange is None else yrange
         )
         self.fig = fig
@@ -88,62 +138,62 @@ class Generator:
                 f"state dictionary, found {type(self.seed)}"
             )
 
-    def _create_fig(self, **kwargs):
+    def __create_fig(self, **kwargs):
         fig, ax = (
             plt.subplots(figsize=(7, 7), **kwargs)
             if self.fig is None or self.ax is None
             else (self.fig, self.ax)
         )
         ax.set_axis_off()
-        ax.set_facecolor(self.background)
-        fig.set_facecolor(self.background)
+        ax.set_facecolor(self._background)
+        fig.set_facecolor(self._background)
         ax.set_xticks([])
         ax.set_yticks([])
         return fig, ax
 
-    def _create_mesh(self, **kwargs):
-        X, Y = np.meshgrid(self.xrange, self.yrange)
+    def __create_mesh(self, **kwargs):
+        X, Y = np.meshgrid(self._xrange, self._yrange)
         return X, Y
 
-    def _x_function(self, X, Y):
+    def __generate_x_func(self, X, Y):
         """
         Return changed for x values of points based on the function.
 
-        Arguments:
-        mesh: np.meshgrid Grid
+        Args:
+            mesh: np.meshgrid Grid
 
         Returns:
-        np.array: Changed X values
+            np.array: Changed X values
         """
         tree = ExpressionTree(self.rng, depth=0, max_depth=5, variables=[X, Y])
         tree.generate_function(None, 2, 1, None, None, None)
         return tree
 
-    def _y_function(self, X, Y):
+    def __generate_y_func(self, X, Y):
         """
         Return changed for y values of points based on the function.
 
-        Arguments:
-        mesh: np.meshgrid Grid
+        Args:
+            mesh: np.meshgrid Grid
 
         Returns:
-        np.array: Changed Y values
+            np.array: Changed Y values
         """
         tree = ExpressionTree(self.rng, depth=0, max_depth=5, variables=[X, Y])
         tree.generate_function(None, 2, 1, None, None, None)
         return tree
 
-    def _save_info(self, filetype, filepath):
+    def __save_info(self, filetype, filepath):
         info = {
             "user_seed": self.seed,
             "random_state": self.random_state,
             "filetype": filetype,
             "filepath": filepath,
-            "x_function": self.xfunc.get_expr_string()
-            if isinstance(self.xfunc, ExpressionTree)
+            "x_function": self._xfunc.get_expr_string()
+            if isinstance(self._xfunc, ExpressionTree)
             else None,
-            "y_function": self.yfunc.get_expr_string()
-            if isinstance(self.yfunc, ExpressionTree)
+            "y_function": self._yfunc.get_expr_string()
+            if isinstance(self._yfunc, ExpressionTree)
             else None,
         }
         basename, filename = os.path.split(os.path.abspath(filepath))
@@ -153,48 +203,74 @@ class Generator:
         print(f"Stored run info at {json_filepath}")
 
     def generate_image(self, filepath="", **kwargs):
-        """Generate the image and save it."""
-        fig, ax = self._create_fig(subplot_kw={"projection": self.projection})
-        X, Y = self._create_mesh()
-        if not self.xfunc:
-            self.xfunc = self._x_function(X, Y)
-            x_res = self.xfunc.execute()
-        else:
-            x_res = self.xfunc(X, Y).real
+        """Generate the image and save it.
 
-        if not self.yfunc:
-            self.yfunc = self._y_function(X, Y)
-            y_res = self.yfunc.execute()
-        else:
-            y_res = self.yfunc(X, Y).real
+        Args:
+            filepath: str
+                Path to store the final image at. If not provided, a filename
+                is generated based on the random generator and the seed.
 
-        ax.scatter(x_res, y_res, c=self.pointcolor, s=0.2, alpha=0.05)
+            **kwargs:
+                Keyword arguments passed onwards to matplotlib's scatter
+                function.
+        """
+        fig, ax = self.__create_fig(subplot_kw={"projection": self._projection})
+        X, Y = self.__create_mesh()
+        if not self._xfunc:
+            self._xfunc = self.__generate_x_func(X, Y)
+            x_res = self._xfunc.execute()
+        else:
+            x_res = self._xfunc(X, Y).real
+
+        if not self._yfunc:
+            self._yfunc = self.__generate_y_func(X, Y)
+            y_res = self._yfunc.execute()
+        else:
+            y_res = self._yfunc(X, Y).real
+
+        ax.scatter(
+            x_res, y_res, c=self._pointcolor, s=0.2, alpha=0.05, **kwargs
+        )
         if not filepath:
             filepath = (
                 f"{self.random_state['bit_generator']}"
                 f"_{self.random_state['state']['state']}.png"
             )
 
-        self._save_info("image", filepath)
+        self.__save_info("image", filepath)
         fig.savefig(filepath, dpi=350)
         return fig, ax
 
     def generate_animation(
         self, filepath="./examples/temp.mp4", init_cond="linear", **kwargs
     ):
-        """Generate animation for the given formulae."""
-        X, Y = self._create_mesh()
-        if not self.xfunc:
-            self.xfunc = self._x_function(X, Y)
-            x_res = self.xfunc.execute()
-        else:
-            x_res = self.xfunc(X, Y)
+        """Generate animation for the given formulae.
 
-        if not self.yfunc:
-            self.yfunc = self._y_function(X, Y)
-            y_res = self.yfunc.execute()
+        Args:
+            filepath: str
+                Path to store the final image at. If not provided, a filename
+                is generated based on the random generator and the seed.
+
+            init_cond: str
+                Initial condition to start the animation from. Can be one of
+                "linear" or "uniform". Default is set to "linear".
+
+            **kwargs:
+                Keyword arguments passed onwards to matplotlib's scatter
+                function.
+        """
+        X, Y = self.__create_mesh()
+        if not self._xfunc:
+            self._xfunc = self.__generate_x_func(X, Y)
+            x_res = self._xfunc.execute()
         else:
-            y_res = self.yfunc(X, Y)
+            x_res = self._xfunc(X, Y)
+
+        if not self._yfunc:
+            self._yfunc = self.__generate_y_func(X, Y)
+            y_res = self._yfunc.execute()
+        else:
+            y_res = self._yfunc(X, Y)
 
         x_points = x_res.reshape(-1, 1)
         y_points = y_res.reshape(-1, 1)
@@ -206,8 +282,8 @@ class Generator:
                 ]
             )
         elif init_cond == "uniform":
-            low = np.min(self.xrange)
-            high = np.max(self.xrange)
+            low = np.min(self._xrange)
+            high = np.max(self._xrange)
             initial_points = np.stack(
                 [
                     self.rng.uniform(low, high, x_points.shape),
@@ -226,21 +302,21 @@ class Generator:
         )
         intercepts = initial_points[1, :] - slopes * initial_points[0, :]
 
-        fig, ax = self._create_fig(subplot_kw={"projection": self.projection})
+        fig, ax = self.__create_fig(subplot_kw={"projection": self._projection})
         scat = ax.scatter(
             final_points[0, :],
             final_points[1, :],
-            c=self.pointcolor,
+            c=self._pointcolor,
             s=0.2,
             alpha=0.05,
         )
 
-        dx = (final_points[0, :] - initial_points[0, :]) / len(self.yrange)
+        dx = (final_points[0, :] - initial_points[0, :]) / len(self._yrange)
 
-        def generate_data():
+        def __generate_data():
             while True:
                 i = yield
-                if i < len(self.yrange):
+                if i < len(self._yrange):
                     points = initial_points[0, :] + (i + 1) * dx
                     lines = slopes * points + intercepts
                     data = np.stack([points, lines]).squeeze()
@@ -248,10 +324,10 @@ class Generator:
                     data = final_points.squeeze()
                 yield data
 
-        generator = generate_data()
+        generator = __generate_data()
         pbar = tqdm.tqdm()
 
-        def animate(i):
+        def __animate(i):
             next(generator)
             data = generator.send(i)
             scat.set_offsets(data.T)
@@ -260,7 +336,7 @@ class Generator:
             return (scat,)
 
         ani = FuncAnimation(
-            fig=fig, func=animate, blit=True, frames=len(self.yrange) + 50
+            fig=fig, func=__animate, blit=True, frames=len(self._yrange) + 50
         )
         if not filepath:
             filepath = (
@@ -268,4 +344,4 @@ class Generator:
                 f"_{self.random_state['state']['state']}.mp4"
             )
         ani.save(filepath, writer="ffmpeg", fps=24)
-        self._save_info("video", filepath)
+        self.__save_info("video", filepath)
