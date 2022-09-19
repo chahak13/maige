@@ -12,6 +12,7 @@ g.generate_image()
 
 <!-- ![](./examples/ghost.png) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/ghost.png" width="50%">
+
 ### Projection
 
 ``` python
@@ -22,6 +23,7 @@ g.generate_image()
 
 <!-- ![](./examples/rectilinear.png) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/rectilinear.png" width="50%">
+
 ### Custom Function
 
 ``` python
@@ -37,6 +39,7 @@ fig, ax = g.generate_image("./examples/custom_func.png")
 ```
 <!-- ![](./examples/custom_func.png) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/custom_func.png" width="50%">
+
 ### Custom Range
 
 ``` python
@@ -68,6 +71,7 @@ fig, ax = g.generate_image("./examples/custom_color.png")
 ```
 <!-- ![](./examples/custom_color.png) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/custom_color.png" width="50%">
+
 ### Animation
 
 ``` python
@@ -87,4 +91,5 @@ g.generate_animation("./examples/anim_example.gif", init_cond="uniform")
 
 <!-- ![](./examples/anim_example_compressed.gif) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/anim_example_compressed.gif" width="50%">
+
 ### Reproducibility
