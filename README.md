@@ -107,7 +107,21 @@ fig, ax = g.generate_image("./examples/rectilinear_2.png")
 
 ## Installation
 
-Currently this library can be used only by cloning the repository and installing it. `Pipfile` and `requirements.txt` are provided to install virtual environment using `pipenv` or `pip`. This can be done by following steps:
+### PyPI
+`maige` can be installed directly from PyPI by using `pip` or `pipenv`
+
+``` shell
+pip install maige
+```
+or
+
+``` shell
+pipenv install maige
+```
+
+
+### Source
+`Pipfile` and `requirements.txt` are provided to install virtual environment using `pipenv` or `pip`. This can be done by following steps:
 
 ``` shell
 $ git clone https://github.com/chahak13/maige.git
