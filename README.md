@@ -11,6 +11,7 @@ g.generate_image()
 ```
 
 ![](./examples/ghost.png)
+<img src="https://github.com/chahak13/maige/blob/main/examples/rectilinear.png" width="50%">
 ### Projection
 
 ``` python
