@@ -59,6 +59,7 @@ fig, ax = g.generate_image("./examples/custom_range.png")
 
 <!-- ![](./examples/custom_range.png) -->
 <img src="https://github.com/chahak13/maige/blob/main/examples/custom_range.png" width="50%">
+
 ### Color
 
 ``` python
@@ -93,3 +94,13 @@ g.generate_animation("./examples/anim_example.gif", init_cond="uniform")
 <img src="https://github.com/chahak13/maige/blob/main/examples/anim_example_compressed.gif" width="50%">
 
 ### Reproducibility
+
+Images and animations can be reproduced by using the JSON stored on the first creation. One can also pass an integer seed to reproduce the same designs over multiple runs.
+``` python
+from maige.generator import Generator
+
+g = Generator(
+    seed="./examples/rectilinear.json",
+)
+fig, ax = g.generate_image("./examples/rectilinear_2.png")
+```
