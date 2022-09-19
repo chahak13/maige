@@ -104,3 +104,16 @@ g = Generator(
 )
 fig, ax = g.generate_image("./examples/rectilinear_2.png")
 ```
+
+## Installation
+
+Currently this library can be used only by cloning the repository and installing it. `Pipfile` and `requirements.txt` are provided to install virtual environment using `pipenv` or `pip`. This can be done by following steps:
+
+``` shell
+$ git clone https://github.com/chahak13/maige.git
+$ cd maige
+$ pipenv shell
+$ pipenv install
+```
+
+If you're `pip` instead of `pipenv`, change the last command to `pip install -r requirements.txt`.
