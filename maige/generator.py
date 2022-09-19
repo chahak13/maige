@@ -255,6 +255,14 @@ class Generator:
                 Initial condition to start the animation from. Can be one of
                 "linear" or "uniform". Default is set to "linear".
 
+                __linear__: When the value is set to "linear", the initial
+                position of the points is set as x=x for all x in the range,
+                and y=0.
+
+                __uniform__: When the value is set to "uniform", the initial
+                position of the points is set at random points selected from
+                a uniform distribution across the coordinate ranges.
+
             **kwargs:
                 Keyword arguments passed onwards to matplotlib's scatter
                 function.
