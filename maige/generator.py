@@ -228,8 +228,18 @@ class Generator:
         else:
             y_res = self._yfunc(X, Y).real
 
+        z = np.sqrt(x_res**2 + y_res**2)
+        norm = plt.Normalize(np.min(z), np.max(z))
         ax.scatter(
-            x_res, y_res, c=self._pointcolor, s=0.2, alpha=0.05, **kwargs
+            x_res,
+            y_res,
+            # c=self._pointcolor,
+            c=z,
+            norm=norm,
+            s=0.2,
+            alpha=0.05,
+            cmap="YlGnBu",
+            **kwargs,
         )
         if not filepath:
             filepath = (
@@ -310,15 +320,29 @@ class Generator:
         )
         intercepts = initial_points[1, :] - slopes * initial_points[0, :]
 
+        z = np.sqrt(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
+        norm = plt.Normalize(np.min(z), np.max(z))
         fig, ax = self.__create_fig(subplot_kw={"projection": self._projection})
         scat = ax.scatter(
-            final_points[0, :],
-            final_points[1, :],
-            c=self._pointcolor,
+            initial_points[0, :],
+            initial_points[1, :],
+            # c=self._pointcolor,
+            # c=z,
+            # norm=norm,
+            # cmap="viridis",
             s=0.2,
             alpha=0.05,
         )
 
+        import matplotlib
+
+        cmap = matplotlib.cm.winter
+        # colors = cmap(
+        #     norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
+        # )
+        scat.set_color(
+            cmap(norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2))
+        )
         dx = (final_points[0, :] - initial_points[0, :]) / len(self._yrange)
 
         def __generate_data():
@@ -339,6 +363,8 @@ class Generator:
             next(generator)
             data = generator.send(i)
             scat.set_offsets(data.T)
+            scat.set_color(cmap(norm(data[0, :] ** 2 + data[1, :] ** 2)))
+            # scat.set_color(colors)
             pbar.update()
             pbar.refresh()
             return (scat,)
@@ -351,5 +377,5 @@ class Generator:
                 f"{self.random_state['bit_generator']}"
                 f"_{self.random_state['state']['state']}.mp4"
             )
-        ani.save(filepath, writer="ffmpeg", fps=24)
+        ani.save(filepath, writer="ffmpeg", fps=60)
         self.__save_info("video", filepath)
