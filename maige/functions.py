@@ -119,7 +119,7 @@ class ExpressionTree:
             node_type
             if node_type
             else self.rng.choice(
-                np.arange(0, 4), 1, p=[0.001, 0.333, 0.333, 0.333]
+                np.arange(0, 4), 1, p=[1 / 10, 2 / 10, 3 / 10, 4 / 10]
             )
         )
         self.weight = weight if weight else _constants(self.rng)

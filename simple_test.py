@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from generativeart.generator import Generator
+from maige.generator import Generator
 
 # xfunc = lambda X, Y: X + np.arctan(Y) + np.log(np.abs(Y))
 # yfunc = lambda X, Y: Y + np.sin(X) + np.log((X + Y) ** 2)
