@@ -165,7 +165,7 @@ class Generator:
         Returns:
             np.array: Changed X values
         """
-        tree = ExpressionTree(self.rng, depth=0, max_depth=5, variables=[X, Y])
+        tree = ExpressionTree(self.rng, depth=0, max_depth=4, variables=[X, Y])
         tree.generate_function(None, 2, 1, None, None, None)
         return tree
 
@@ -238,7 +238,7 @@ class Generator:
             )
 
         self.__save_info("image", filepath)
-        fig.savefig(filepath, dpi=350)
+        fig.savefig(filepath, dpi=450)
         return fig, ax
 
     def generate_animation(
@@ -351,5 +351,5 @@ class Generator:
                 f"{self.random_state['bit_generator']}"
                 f"_{self.random_state['state']['state']}.mp4"
             )
-        ani.save(filepath, writer="ffmpeg", fps=24)
+        ani.save(filepath, writer="ffmpeg", fps=60, dpi=300)
         self.__save_info("video", filepath)
