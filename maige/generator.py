@@ -57,6 +57,7 @@ class Generator:
         self,
         pointcolor: str = "#000000",
         background: str = "#ffffff",
+        colormap: str = None,
         xfunc: Callable = None,
         yfunc: Callable = None,
         projection: str = "rectilinear",
@@ -75,6 +76,12 @@ class Generator:
             background: str
                 Hex string used to set the color for the background of
                 the figure.
+
+            colormap: str
+                Name of a colormap as defined by matplotlib. If a colormap
+                is provided by the user, then that takes precedence over the
+                pointcolor argument.
+                Ref: https://matplotlib.org/stable/gallery/color/colormap_reference.html
 
             xfunc: Callable
                 Function used to transform the x-coordinates. This is an
@@ -113,6 +120,7 @@ class Generator:
         """
         self._pointcolor = pointcolor
         self._background = background
+        self._colormap = colormap
         self._xfunc = xfunc
         self._yfunc = yfunc
         self._projection = projection
@@ -228,17 +236,23 @@ class Generator:
         else:
             y_res = self._yfunc(X, Y).real
 
-        z = np.sqrt(x_res**2 + y_res**2)
-        norm = plt.Normalize(np.min(z), np.max(z))
+        color_args = {}
+        if self._colormap is not None:
+            z = np.sqrt(x_res**2 + y_res**2)
+            norm = plt.Normalize(np.min(z), np.max(z))
+            color_args = {
+                "c": z,
+                "norm": norm,
+            }
+        elif self._pointcolor is not None:
+            color_args = {"c": self._pointcolor}
+
         ax.scatter(
             x_res,
             y_res,
-            # c=self._pointcolor,
-            c=z,
-            norm=norm,
             s=0.2,
             alpha=0.05,
-            cmap="YlGnBu",
+            **color_args,
             **kwargs,
         )
         if not filepath:
