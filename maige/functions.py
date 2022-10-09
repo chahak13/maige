@@ -81,9 +81,6 @@ _unary_functions = [
     _log,
     np.sinc,
     _sqrt,
-    _power1,
-    _power2,
-    _power3,
 ]
 
 _binary_functions = [
@@ -119,7 +116,7 @@ class ExpressionTree:
             node_type
             if node_type
             else self.rng.choice(
-                np.arange(0, 4), 1, p=[0.001, 0.333, 0.333, 0.333]
+                np.arange(0, 4), 1, p=[1 / 10, 2 / 10, 3 / 10, 4 / 10]
             )
         )
         self.weight = weight if weight else _constants(self.rng)
@@ -133,11 +130,15 @@ class ExpressionTree:
                 if value
                 else np.ones(self.variables[0].shape) * _constants(self.rng)
             )
+            self.power = 1
         elif self.node_type == 1:  # variable
             self.index = (
                 var_index
                 if var_index is not None
                 else self.rng.integers(0, len(self.variables))
+            )
+            self.power = self.rng.choice(
+                [1, 2, 3, 4], p=[5 / 10, 3 / 10, 1 / 10, 1 / 10]
             )
             self.expr = self.variables[self.index]
             # self.expr = index
@@ -205,7 +206,7 @@ class ExpressionTree:
             inputs.append(child.execute())
 
         if self.node_type == 0 or self.node_type == 1:
-            return self.expr * self.weight
+            return (self.expr**self.power) * self.weight
         elif self.node_type == 2:
             return self.method(inputs[0], inputs[1]).real
         elif self.node_type == 3:
@@ -221,7 +222,8 @@ class ExpressionTree:
         if self.node_type == 0:
             return string + f"{self.expr[0, 0]} * {self.weight}"
         elif self.node_type == 1:
-            return string + f"{'x' if self.index==0 else 'y'}"
+            temp = f" ** {self.power}" if self.power != 1 else ""
+            return string + f"{'x' if self.index==0 else 'y'}{temp}"
         elif self.node_type == 2:
             return string + f"{self.method.__name__}({inputs[0]}, {inputs[1]})"
         elif self.node_type == 3:
