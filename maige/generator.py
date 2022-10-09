@@ -335,13 +335,13 @@ class Generator:
         )
         intercepts = initial_points[1, :] - slopes * initial_points[0, :]
 
-        z = np.sqrt(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
-        norm = plt.Normalize(np.min(z), np.max(z))
+        # z = np.sqrt(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
+        # norm = plt.Normalize(np.min(z), np.max(z))
         fig, ax = self.__create_fig(subplot_kw={"projection": self._projection})
         scat = ax.scatter(
             initial_points[0, :],
             initial_points[1, :],
-            # c=self._pointcolor,
+            c=self._pointcolor,
             # c=z,
             # norm=norm,
             # cmap="viridis",
@@ -349,15 +349,15 @@ class Generator:
             alpha=0.05,
         )
 
-        import matplotlib
+        # import matplotlib
 
-        cmap = matplotlib.cm.winter
+        # cmap = matplotlib.cm.winter
         # colors = cmap(
         #     norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
         # )
-        scat.set_color(
-            cmap(norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2))
-        )
+        # scat.set_color(
+        #     cmap(norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2))
+        # )
         dx = (final_points[0, :] - initial_points[0, :]) / len(self._yrange)
 
         def __generate_data():
@@ -378,7 +378,7 @@ class Generator:
             next(generator)
             data = generator.send(i)
             scat.set_offsets(data.T)
-            scat.set_color(cmap(norm(data[0, :] ** 2 + data[1, :] ** 2)))
+            # scat.set_color(cmap(norm(data[0, :] ** 2 + data[1, :] ** 2)))
             # scat.set_color(colors)
             pbar.update()
             pbar.refresh()
