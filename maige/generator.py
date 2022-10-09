@@ -239,10 +239,11 @@ class Generator:
         color_args = {}
         if self._colormap is not None:
             z = np.sqrt(x_res**2 + y_res**2)
-            norm = plt.Normalize(np.min(z), np.max(z))
+            norm = plt.Normalize(z.min(), z.max())
             color_args = {
                 "c": z,
                 "norm": norm,
+                "cmap": self._colormap,
             }
         elif self._pointcolor is not None:
             color_args = {"c": self._pointcolor}
