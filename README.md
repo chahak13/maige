@@ -65,6 +65,7 @@ fig, ax = g.generate_image("./examples/custom_range.png")
 
 ### Color
 
+Colors can be customized by providing a individual colors or colormaps from matplotlib.
 ``` python
 g = Generator(
     pointcolor="#000000",
@@ -75,6 +76,17 @@ fig, ax = g.generate_image("./examples/custom_color.png")
 ```
 <!-- ![](./examples/custom_color.png) -->
 <img src="https://raw.githubusercontent.com/chahak13/maige/main/examples/custom_color.png" width="50%">
+
+Colormap example:
+
+``` python
+g = Generator(
+    projection="polar",
+    colormap="viridis",
+)
+fig, ax = g.generate_image(filepath="./examples/custom_colormap.png")
+```
+<img src="https://raw.githubusercontent.com/chahak13/maige/main/examples/custom_colormap.png" width="50%">
 
 ### Animation
 

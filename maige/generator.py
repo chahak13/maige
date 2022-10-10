@@ -57,6 +57,7 @@ class Generator:
         self,
         pointcolor: str = "#000000",
         background: str = "#ffffff",
+        colormap: str = None,
         xfunc: Callable = None,
         yfunc: Callable = None,
         projection: str = "rectilinear",
@@ -75,6 +76,12 @@ class Generator:
             background: str
                 Hex string used to set the color for the background of
                 the figure.
+
+            colormap: str
+                Name of a colormap as defined by matplotlib. If a colormap
+                is provided by the user, then that takes precedence over the
+                pointcolor argument.
+                Ref: https://matplotlib.org/stable/gallery/color/colormap_reference.html
 
             xfunc: Callable
                 Function used to transform the x-coordinates. This is an
@@ -113,6 +120,7 @@ class Generator:
         """
         self._pointcolor = pointcolor
         self._background = background
+        self._colormap = colormap
         self._xfunc = xfunc
         self._yfunc = yfunc
         self._projection = projection
@@ -228,8 +236,25 @@ class Generator:
         else:
             y_res = self._yfunc(X, Y).real
 
+        color_args = {}
+        if self._colormap is not None:
+            z = np.sqrt(x_res**2 + y_res**2)
+            norm = plt.Normalize(z.min(), z.max())
+            color_args = {
+                "c": z,
+                "norm": norm,
+                "cmap": self._colormap,
+            }
+        elif self._pointcolor is not None:
+            color_args = {"c": self._pointcolor}
+
         ax.scatter(
-            x_res, y_res, c=self._pointcolor, s=0.2, alpha=0.05, **kwargs
+            x_res,
+            y_res,
+            s=0.2,
+            alpha=0.05,
+            **color_args,
+            **kwargs,
         )
         if not filepath:
             filepath = (
@@ -310,15 +335,29 @@ class Generator:
         )
         intercepts = initial_points[1, :] - slopes * initial_points[0, :]
 
+        # z = np.sqrt(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
+        # norm = plt.Normalize(np.min(z), np.max(z))
         fig, ax = self.__create_fig(subplot_kw={"projection": self._projection})
         scat = ax.scatter(
-            final_points[0, :],
-            final_points[1, :],
+            initial_points[0, :],
+            initial_points[1, :],
             c=self._pointcolor,
+            # c=z,
+            # norm=norm,
+            # cmap="viridis",
             s=0.2,
             alpha=0.05,
         )
 
+        # import matplotlib
+
+        # cmap = matplotlib.cm.winter
+        # colors = cmap(
+        #     norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2)
+        # )
+        # scat.set_color(
+        #     cmap(norm(initial_points[0, :] ** 2 + initial_points[1, :] ** 2))
+        # )
         dx = (final_points[0, :] - initial_points[0, :]) / len(self._yrange)
 
         def __generate_data():
@@ -339,6 +378,8 @@ class Generator:
             next(generator)
             data = generator.send(i)
             scat.set_offsets(data.T)
+            # scat.set_color(cmap(norm(data[0, :] ** 2 + data[1, :] ** 2)))
+            # scat.set_color(colors)
             pbar.update()
             pbar.refresh()
             return (scat,)

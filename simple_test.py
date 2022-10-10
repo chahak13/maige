@@ -22,8 +22,8 @@ g = Generator(
     yrange=yrange,
     seed=2,
 )
-fig, ax = g.generate_image()
-# g.generate_animation(filepath="./examples/generator_long.mp4", init_cond="uniform")
+# fig, ax = g.generate_image()
+g.generate_animation(filepath="./examples/color_test.mp4", init_cond="uniform")
 # del g
 # xrange = np.arange(-np.pi + 1, np.pi + 1, 0.01)
 # yrange = np.arange(-np.pi + 1, np.pi + 1, 0.01)
