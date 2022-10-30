@@ -146,9 +146,9 @@ class Generator:
                 f"state dictionary, found {type(self.seed)}"
             )
 
-    def __create_fig(self, **kwargs):
+    def _create_fig(self, **kwargs):
         fig, ax = (
-            plt.subplots(figsize=(7, 7), **kwargs)
+            plt.subplots(**kwargs)
             if self.fig is None or self.ax is None
             else (self.fig, self.ax)
         )
